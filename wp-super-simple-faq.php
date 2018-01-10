@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: WP AquaAid
-Plugin URI: https://github.com/webseo-online/wpaquaaid
+Plugin URI: https://github.com/webseo-online/aquaaid
 Description: AquaAid
 Author: Web SEO Online (PTY) LTD
 Author URI: https://webseo.co.za
