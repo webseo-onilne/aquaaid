@@ -35,7 +35,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 			public function frontend_scripts () {
 				global $post; 
 				// JS			 
-				wp_enqueue_script( 'aquaaid_scripts', plugin_dir_url( __FILE__ ) . 'assets/js/aquaaid.js', array( 'jquery', 'angular_js' ) );				
+				wp_enqueue_script( 'aquaaid_scripts', plugin_dir_url( __FILE__ ) . 'assets/js/aquaaid.js', array() );				
 				// CSS
 				wp_register_style( 'aquaaid_css', plugin_dir_url( __FILE__ ) .'assets/css/aquaaid.css', array(), '20161026' );
 				wp_enqueue_style( 'aquaaid_css' );				
