@@ -33,7 +33,9 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 				// Plugin Settings page
 				add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
 				// Plugin Settings
-				add_action( 'admin_init', array( $this, 'aa_plugin_settings' ) );				
+				add_action( 'admin_init', array( $this, 'aa_plugin_settings' ) );
+				// Create database on plugin installation
+				register_activation_hook( __FILE__, array( $this, 'aa_plugin_install' ) );
 			}
 
 
@@ -52,8 +54,8 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 				wp_localize_script( 'aquaaid_scripts', 'aquaaid', array(
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
 					'post_id' => $post->ID,
-					'gform_1' => get_option( 'g_input_1' ),
-					'gform_2' => get_option( 'g_input_2' )			
+					'gform_1' => get_option( 'g_select_1' ),
+					'gform_2' => get_option( 'g_select_2' )			
 				));
 			}
 
@@ -84,33 +86,81 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 					<form action="options.php" method="post">
 						
+						<?php $forms = GFAPI::get_forms(); ?>
 						<?php settings_fields( 'aa-plugin-settings' ); ?>
 						<?php do_settings_sections( 'aa-plugin-settings' ); ?>
 
 						<table class="form-table">
 							<tbody>
 								<tr>
-									<th><label for="g_input_1">Gravity Form 1 ID:</label></th>
-									<td><input type="text" id="g_input_1" name="g_input_1" value="<?php echo esc_attr( get_option( 'g_input_1' ) ) ?>" /></td>
+									<th><label for="g_select_1">Gravity Form 1 ID:</label></th>
+									<td><select id="g_select_1" name="g_select_1">
+									<?php foreach ($forms as $key => $value) { ?>
+										<option 
+											value="<?php echo $value['id'] ?>" 
+											<?php echo esc_attr( get_option('g_select_1') ) == $value['id'] ? 'selected="selected"' : ''; ?>>
+												<?php echo $value['title'] ?>
+										</option>
+									<?php } ?>
+									</select></td>
 								</tr>
+
 								<tr>
-									<th><label for="g_input_2">Gravity Form 2 ID:</label></th>
-									<td><input type="text" id="g_input_2" name="g_input_2" value="<?php echo esc_attr( get_option( 'g_input_2' ) ) ?>" /></td>
-								</tr>								
+									<th><label for="g_select_2">Gravity Form 2 ID:</label></th>
+									<td><select id="g_select_2" name="g_select_2">
+									<?php foreach ($forms as $key => $value) { ?>
+										<option 
+											value="<?php echo $value['id'] ?>" 
+											<?php echo esc_attr( get_option('g_select_2') ) == $value['id'] ? 'selected="selected"' : ''; ?>>
+												<?php echo $value['title'] ?>
+										</option>
+									<?php } ?>
+									</select></td>
+								</tr>																								
 							</tbody>
 						</table>
 								
 						<?php submit_button(); ?>
 
 					</form>
+
 				</div> 
 				<?php
 			}
+
 			
+			/**
+			 * Register plugin settings
+			 */
 			public function aa_plugin_settings() {
-				register_setting( 'aa-plugin-settings', 'g_input_1' );
-				register_setting( 'aa-plugin-settings', 'g_input_2' );
-				register_setting( 'aa-plugin-settings', 'upload_input' );
+				register_setting( 'aa-plugin-settings', 'g_select_2' );
+				register_setting( 'aa-plugin-settings', 'g_select_1' );
+			}
+
+
+			/**
+			 * Add DB table on plugin install
+			 */
+			public function aa_plugin_install() {
+				global $wpdb;
+				global $jal_db_version;
+			
+				$table_name = $wpdb->prefix . 'wp_aa_custom-table';
+				
+				$charset_collate = $wpdb->get_charset_collate();
+			
+				$sql = "CREATE TABLE $table_name (
+					id mediumint(9) NOT NULL AUTO_INCREMENT,
+					time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+					postcode varchar(55) DEFAULT '' NOT NULL,
+					message text NOT NULL,
+					PRIMARY KEY  (id)
+				) $charset_collate;";
+			
+				require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+				dbDelta( $sql );
+			
+				add_option( 'aa_db_version', $jal_db_version );
 			}
 
 		}
