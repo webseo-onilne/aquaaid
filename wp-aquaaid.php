@@ -28,6 +28,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 		class WP_AquaAid {
 
 			public function __construct() {
+				add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ) );
 				add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
 			}
 
@@ -38,7 +39,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 			public function frontend_scripts () {
 				global $post; 
 				// JS			 
-				wp_enqueue_script( 'aquaaid_scripts', plugin_dir_url( __FILE__ ) . 'assets/js/aquaaid.js', array() );				
+				wp_enqueue_script( 'aquaaid_scripts', plugin_dir_url( __FILE__ ) . 'assets/js/aquaaid.js', array( 'jquery') );				
 				// CSS register
 				wp_register_style( 'aquaaid_css', plugin_dir_url( __FILE__ ) .'assets/css/aquaaid.css', array() );
 				// CSS enqueue
