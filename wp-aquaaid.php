@@ -26,7 +26,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 		class WP_AquaAid {
 
-			public function __construct() { }
+			public function __construct() {}
 
 
 			/**
@@ -36,10 +36,10 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 				global $post; 
 				// JS			 
 				wp_enqueue_script( 'aquaaid_scripts', plugin_dir_url( __FILE__ ) . 'assets/js/aquaaid.js', array() );				
-				// CSS
-				wp_register_style( 'aquaaid_css', plugin_dir_url( __FILE__ ) .'assets/css/aquaaid.css', array(), '20161026' );
+				// CSS register
+				wp_register_style( 'aquaaid_css', plugin_dir_url( __FILE__ ) .'assets/css/aquaaid.css', array() );
+				// CSS enqueue
 				wp_enqueue_style( 'aquaaid_css' );				
-
 				// Create local variables here TODO: get from plugin options
 				wp_localize_script( 'aquaaid_scripts', 'aquaaid', array(
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -49,9 +49,32 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 
 			/**
-			 * Class Members
+			 * Add options page
 			 */
-			public function doSomething() {}
+			public function add_plugin_page() {
+				// This page will be under "Settings"
+				add_options_page(
+					'AA Settings', 
+					'My Settings', 
+					'manage_options', 
+					'aa-setting-admin', 
+					array( $this, 'create_admin_page' )
+				);
+			}
+			
+
+			/**
+			 * Options page callback
+			 */
+			public function create_admin_page() {
+				// Set class property
+				$this->options = get_option( 'my_option_name' );
+				?>
+				<div class="wrap">
+					<h1>My Settings</h1>
+				</div>
+				<?php
+			}			
 
 		}
 
