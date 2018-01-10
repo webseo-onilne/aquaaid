@@ -36,6 +36,8 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 				add_action( 'admin_init', array( $this, 'aa_plugin_settings' ) );
 				// Create database on plugin installation
 				register_activation_hook( __FILE__, array( $this, 'aa_plugin_install' ) );
+				// Admin Upload ajax
+				add_action( 'wp_ajax_do_ajax_upload', array( $this, 'do_ajax_upload' ) );
 			}
 
 
@@ -113,7 +115,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 						<table class="form-table">
 							<tbody>
 								<tr>
-									<th><label for="g_select_1">Gravity Form 1 ID:</label></th>
+									<th><label for="g_select_1">Gravity Form 1:</label></th>
 									<td><select id="g_select_1" name="g_select_1">
 									<?php foreach ($forms as $key => $value) { ?>
 										<option 
@@ -125,7 +127,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 									</select></td>
 								</tr>
 								<tr>
-									<th><label for="g_select_2">Gravity Form 2 ID:</label></th>
+									<th><label for="g_select_2">Gravity Form 2:</label></th>
 									<td><select id="g_select_2" name="g_select_2">
 									<?php foreach ($forms as $key => $value) { ?>
 										<option 
@@ -135,7 +137,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 										</option>
 									<?php } ?>
 									</select></td>
-								</tr>																								
+								</tr>																							
 							</tbody>
 						</table>
 								
@@ -143,10 +145,18 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 					</form>
 
+					<form class="upform" enctype="multipart/form-data"> 
+						<label for="aa_file_upload">Upload CSV</label>
+						<input id="aa_file_upload" type="file" name="aa_file_upload"/>
+						<input type="hidden" name="action" value="do_ajax_upload"/>
+						<button class="upload button button-primary">Upload</button>
+						<progress></progress>
+					</form>
+
 				</div> 
 				<?php
 			}
-
+			
 			
 			/**
 			 * Register plugin settings
@@ -180,6 +190,38 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 				dbDelta( $sql );
 			
 				add_option( 'aa_db_version', $aa_db_version );
+			}
+
+
+			/**
+			 * Ajax DB Import
+			 */
+			public function do_ajax_upload() {
+				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+					global $wpdb;
+
+					$file_data = array();
+					$handle = fopen($_FILES['aa_file_upload']['tmp_name'], "r");
+					$counter = 0;
+					while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+					
+						// Skip the first row as is likely column names
+						if ($counter === 0) {
+							$counter++;
+							continue;
+						}
+						$file_data[] = $data[0];
+						//Insert the row into the database
+						$query = $wpdb->insert($wpdb->prefix . "aa_post_codes_uk", array(
+							"email" => $data[0],
+							"postcode" => $data[1],
+							"message" => $data[2]
+						));
+					}
+
+				    echo json_encode( $query ? 'success' : $wpdb->last_error );		
+				}
+				wp_die();
 			}
 
 		}
