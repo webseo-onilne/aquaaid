@@ -156,7 +156,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 				</div> 
 				<?php
 			}
-			
+
 			
 			/**
 			 * Register plugin settings
@@ -218,6 +218,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 							"message" => $data[2]
 						));
 					}
+					fclose($handle);
 
 				    echo json_encode( $query ? 'success' : $wpdb->last_error );		
 				}
