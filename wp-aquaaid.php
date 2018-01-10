@@ -1,16 +1,17 @@
 <?php
 /*
-Plugin Name: WP AquaAid
-Plugin URI: https://github.com/webseo-online/aquaaid
-Description: AquaAid
-Author: Web SEO Online (PTY) LTD
-Author URI: https://webseo.co.za
-Version: 0.0.1
+	Plugin Name: WP AquaAid
+	Plugin URI: https://github.com/webseo-online/aquaaid
+	Description: AquaAid
+	Author: Web SEO Online (PTY) LTD
+	Author URI: https://webseo.co.za
+	Version: 0.0.1
 
 	Copyright: © 2016 Web SEO Online (PTY) LTD (email : supprt@webseo.co.za)
 	License: GNU General Public License v3.0
 	License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
+
 
 /**
  * Check if gravityforms is active
@@ -57,7 +58,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 				// This page will be under "Settings"
 				add_options_page(
 					'AA Settings', 
-					'My Settings', 
+					'AA Settings', 
 					'manage_options', 
 					'aa-setting-admin', 
 					array( $this, 'create_admin_page' )
@@ -66,17 +67,17 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 
 			/**
-			 * Options page callback
+			 * settings page callback
 			 */
 			public function create_admin_page() {
 				// Set class property
-				$this->options = get_option( 'my_option_name' );
-				?>
+				$this->options = get_option( 'my_option_name' ); ?>
 				<div class="wrap">
 					<h1>My Settings</h1>
-				</div>
-				<?php
-			}			
+					<!-- form goes here -->
+				</div> <?php
+			}
+
 
 		}
 
