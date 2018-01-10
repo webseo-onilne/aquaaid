@@ -1,15 +1,15 @@
 <?php
 /*
-	Plugin Name: WP AquaAid
-	Plugin URI: https://github.com/webseo-online/aquaaid
-	Description: AquaAid
-	Author: Web SEO Online (PTY) LTD
-	Author URI: https://webseo.co.za
-	Version: 0.0.1
+Plugin Name: WP AquaAid
+Plugin URI: https://github.com/webseo-online/aquaaid
+Description: AquaAid
+Author: Web SEO Online (PTY) LTD
+Author URI: https://webseo.co.za
+Version: 0.0.1
 
-	Copyright: © 2016 Web SEO Online (PTY) LTD (email : supprt@webseo.co.za)
-	License: GNU General Public License v3.0
-	License URI: http://www.gnu.org/licenses/gpl-3.0.html
+Copyright: © 2016 Web SEO Online (PTY) LTD (email : supprt@webseo.co.za)
+License: GNU General Public License v3.0
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
 
 
@@ -61,22 +61,42 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 
 			/**
+			 * Add scripts used in the admin area
+			 */	
+			public function enqueue_admin_assets(){
+			    // Enqueue custom js
+			    wp_enqueue_script( 'aa_admin_scripts', plugin_dir_url( __FILE__ ) . 'assets/js/aquaaid_admin.js', array( 'jquery' ) );
+			}
+
+
+			/**
+			 * This function is only called when our plugin's page loads
+			 */	 
+			public function lazy_load_admin_js() {
+			    add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
+			}
+
+
+			/**
 			 * Add options page
 			 */
 			public function add_plugin_page() {
 				// This page will be under "Settings"
-				add_options_page(
+				$admin_page = add_options_page(
 					'AA Settings', 
 					'AA Settings', 
 					'manage_options', 
 					'aa-setting-admin', 
 					array( $this, 'create_admin_page' )
-				);				
+				);
+				
+				// Load the JS only on this admin page
+				add_action( 'load-' . $admin_page, array( $this, 'lazy_load_admin_js' ) );			
 			}
 
 
 			/**
-			 * settings page callback
+			 * settings page html
 			 */
 			public function create_admin_page() {
 				?>
@@ -99,12 +119,11 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 										<option 
 											value="<?php echo $value['id'] ?>" 
 											<?php echo esc_attr( get_option('g_select_1') ) == $value['id'] ? 'selected="selected"' : ''; ?>>
-												<?php echo $value['title'] ?>
+											<?php echo $value['title'] ?>
 										</option>
 									<?php } ?>
 									</select></td>
 								</tr>
-
 								<tr>
 									<th><label for="g_select_2">Gravity Form 2 ID:</label></th>
 									<td><select id="g_select_2" name="g_select_2">
@@ -112,7 +131,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 										<option 
 											value="<?php echo $value['id'] ?>" 
 											<?php echo esc_attr( get_option('g_select_2') ) == $value['id'] ? 'selected="selected"' : ''; ?>>
-												<?php echo $value['title'] ?>
+											<?php echo $value['title'] ?>
 										</option>
 									<?php } ?>
 									</select></td>
@@ -143,15 +162,15 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 			 */
 			public function aa_plugin_install() {
 				global $wpdb;
-				global $jal_db_version;
+				global $aa_db_version;
 			
-				$table_name = $wpdb->prefix . 'wp_aa_custom-table';
+				$table_name = $wpdb->prefix . 'aa_post_codes_uk';
 				
 				$charset_collate = $wpdb->get_charset_collate();
 			
 				$sql = "CREATE TABLE $table_name (
 					id mediumint(9) NOT NULL AUTO_INCREMENT,
-					time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+					email varchar(55) DEFAULT '' NOT NULL,
 					postcode varchar(55) DEFAULT '' NOT NULL,
 					message text NOT NULL,
 					PRIMARY KEY  (id)
@@ -160,7 +179,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 				require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 				dbDelta( $sql );
 			
-				add_option( 'aa_db_version', $jal_db_version );
+				add_option( 'aa_db_version', $aa_db_version );
 			}
 
 		}
