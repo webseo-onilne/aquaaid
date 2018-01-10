@@ -28,8 +28,12 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 		class WP_AquaAid {
 
 			public function __construct() {
+				// Scripts to include
 				add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ) );
+				// Plugin Settings page
 				add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
+				// Plugin Settings
+				add_action( 'admin_init', array( $this, 'aa_plugin_settings' ) );				
 			}
 
 
@@ -48,7 +52,8 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 				wp_localize_script( 'aquaaid_scripts', 'aquaaid', array(
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
 					'post_id' => $post->ID,
-					'other' => 'add stuff here :)'			
+					'gform_1' => get_option( 'g_input_1' ),
+					'gform_2' => get_option( 'g_input_2' )			
 				));
 			}
 
@@ -64,7 +69,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 					'manage_options', 
 					'aa-setting-admin', 
 					array( $this, 'create_admin_page' )
-				);
+				);				
 			}
 
 
@@ -72,14 +77,41 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 			 * settings page callback
 			 */
 			public function create_admin_page() {
-				// Set class property
-				$this->options = get_option( 'my_option_name' ); ?>
+				?>
 				<div class="wrap">
-					<h1>My Settings</h1>
-					<!-- form goes here -->
-				</div> <?php
-			}
 
+					<h1>Settings</h1>
+
+					<form action="options.php" method="post">
+						
+						<?php settings_fields( 'aa-plugin-settings' ); ?>
+						<?php do_settings_sections( 'aa-plugin-settings' ); ?>
+
+						<table class="form-table">
+							<tbody>
+								<tr>
+									<th><label for="g_input_1">Gravity Form 1 ID:</label></th>
+									<td><input type="text" id="g_input_1" name="g_input_1" value="<?php echo esc_attr( get_option( 'g_input_1' ) ) ?>" /></td>
+								</tr>
+								<tr>
+									<th><label for="g_input_2">Gravity Form 2 ID:</label></th>
+									<td><input type="text" id="g_input_2" name="g_input_2" value="<?php echo esc_attr( get_option( 'g_input_2' ) ) ?>" /></td>
+								</tr>								
+							</tbody>
+						</table>
+								
+						<?php submit_button(); ?>
+
+					</form>
+				</div> 
+				<?php
+			}
+			
+			public function aa_plugin_settings() {
+				register_setting( 'aa-plugin-settings', 'g_input_1' );
+				register_setting( 'aa-plugin-settings', 'g_input_2' );
+				register_setting( 'aa-plugin-settings', 'upload_input' );
+			}
 
 		}
 
