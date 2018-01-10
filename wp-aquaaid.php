@@ -47,7 +47,8 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 				// Create local variables here TODO: get from plugin options
 				wp_localize_script( 'aquaaid_scripts', 'aquaaid', array(
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
-					'post_id' => $post->ID					
+					'post_id' => $post->ID,
+					'other' => 'add stuff here :)'			
 				));
 			}
 
