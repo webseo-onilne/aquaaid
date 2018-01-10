@@ -26,7 +26,9 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 		class WP_AquaAid {
 
-			public function __construct() {}
+			public function __construct() {
+				add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
+			}
 
 
 			/**
@@ -61,7 +63,7 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 					array( $this, 'create_admin_page' )
 				);
 			}
-			
+
 
 			/**
 			 * Options page callback
