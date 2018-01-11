@@ -6,7 +6,7 @@ jQuery(document).ready(function($) {
     $('progress').show();
 
     $.ajax({
-      // Your server script to process the upload
+      // process the upload
       url: 'admin-ajax.php',
       type: 'POST',
 
@@ -14,7 +14,6 @@ jQuery(document).ready(function($) {
       data: new FormData($('.upform')[0]),
 
       // Tell jQuery not to process data or worry about content-type
-      // You *must* include these options!
       cache: false,
       contentType: false,
       processData: false,
