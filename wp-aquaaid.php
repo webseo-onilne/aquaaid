@@ -7,9 +7,9 @@ Author: Web SEO Online (PTY) LTD
 Author URI: https://webseo.co.za
 Version: 0.0.1
 
-Copyright: © 2016 Web SEO Online (PTY) LTD (email : supprt@webseo.co.za)
-License: GNU General Public License v3.0
-License URI: http://www.gnu.org/licenses/gpl-3.0.html
+	Copyright: © 2018 Web SEO Online (PTY) LTD (email : supprt@webseo.co.za)
+	License: GNU General Public License v3.0
+	License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
 
 
@@ -43,7 +43,10 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 			/**
 			 * Add scripts used on the front end
+			 *
+			 * @return void
 			 */
+
 			public function frontend_scripts () {
 				global $post; 
 				// JS			 
@@ -51,8 +54,9 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 				// CSS register
 				wp_register_style( 'aquaaid_css', plugin_dir_url( __FILE__ ) .'assets/css/aquaaid.css', array() );
 				// CSS enqueue
-				wp_enqueue_style( 'aquaaid_css' );				
-				// Create local variables here TODO: get from plugin options
+				wp_enqueue_style( 'aquaaid_css' );
+
+				// Create variables
 				wp_localize_script( 'aquaaid_scripts', 'aquaaid', array(
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
 					'post_id' => $post->ID,
@@ -64,16 +68,21 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 			/**
 			 * Add scripts used in the admin area
-			 */	
+			 *
+			 * @return void
+			 */
+
 			public function enqueue_admin_assets(){
-			    // Enqueue custom js
 			    wp_enqueue_script( 'aa_admin_scripts', plugin_dir_url( __FILE__ ) . 'assets/js/aquaaid_admin.js', array( 'jquery' ) );
 			}
 
 
 			/**
 			 * This function is only called when our plugin's page loads
-			 */	 
+			 *
+			 * @return void
+			 */
+
 			public function lazy_load_admin_js() {
 			    add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 			}
@@ -81,7 +90,10 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 			/**
 			 * Add options page
+			 *
+			 * @return void
 			 */
+
 			public function add_plugin_page() {
 				// This page will be under "Settings"
 				$admin_page = add_options_page(
@@ -99,68 +111,21 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 			/**
 			 * settings page html
+			 *
+			 * @return void
 			 */
+
 			public function create_admin_page() {
-				?>
-				<div class="wrap">
-
-					<h1>Settings</h1>
-
-					<form action="options.php" method="post">
-						
-						<?php $forms = GFAPI::get_forms(); ?>
-						<?php settings_fields( 'aa-plugin-settings' ); ?>
-						<?php do_settings_sections( 'aa-plugin-settings' ); ?>
-
-						<table class="form-table">
-							<tbody>
-								<tr>
-									<th><label for="g_select_1">Gravity Form 1:</label></th>
-									<td><select id="g_select_1" name="g_select_1">
-									<?php foreach ($forms as $key => $value) { ?>
-										<option 
-											value="<?php echo $value['id'] ?>" 
-											<?php echo esc_attr( get_option('g_select_1') ) == $value['id'] ? 'selected="selected"' : ''; ?>>
-											<?php echo $value['title'] ?>
-										</option>
-									<?php } ?>
-									</select></td>
-								</tr>
-								<tr>
-									<th><label for="g_select_2">Gravity Form 2:</label></th>
-									<td><select id="g_select_2" name="g_select_2">
-									<?php foreach ($forms as $key => $value) { ?>
-										<option 
-											value="<?php echo $value['id'] ?>" 
-											<?php echo esc_attr( get_option('g_select_2') ) == $value['id'] ? 'selected="selected"' : ''; ?>>
-											<?php echo $value['title'] ?>
-										</option>
-									<?php } ?>
-									</select></td>
-								</tr>																							
-							</tbody>
-						</table>
-								
-						<?php submit_button(); ?>
-
-					</form>
-
-					<form class="upform" enctype="multipart/form-data"> 
-						<label for="aa_file_upload">Upload CSV</label>
-						<input id="aa_file_upload" type="file" name="aa_file_upload"/>
-						<input type="hidden" name="action" value="do_ajax_upload"/>
-						<button class="upload button button-primary">Upload</button>
-						<progress></progress>
-					</form>
-
-				</div> 
-				<?php
+				include plugin_dir_path( __FILE__ ) . "aa-options-html.php";
 			}
 
 			
 			/**
 			 * Register plugin settings
+			 *
+			 * @return void
 			 */
+
 			public function aa_plugin_settings() {
 				register_setting( 'aa-plugin-settings', 'g_select_2' );
 				register_setting( 'aa-plugin-settings', 'g_select_1' );
@@ -169,13 +134,15 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 			/**
 			 * Add DB table on plugin install
+			 *
+			 * @return void
 			 */
+
 			public function aa_plugin_install() {
 				global $wpdb;
 				global $aa_db_version;
 			
 				$table_name = $wpdb->prefix . 'aa_post_codes_uk';
-				
 				$charset_collate = $wpdb->get_charset_collate();
 			
 				$sql = "CREATE TABLE $table_name (
@@ -195,30 +162,31 @@ if ( in_array( 'gravityforms/gravityforms.php', apply_filters( 'active_plugins',
 
 			/**
 			 * Ajax DB Import
+			 *
+			 * @return void
 			 */
+
 			public function do_ajax_upload() {
 				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 					global $wpdb;
 
-					$file_data = array();
-					$handle = fopen($_FILES['aa_file_upload']['tmp_name'], "r");
+					$handle = fopen( $_FILES['aa_file_upload']['tmp_name'], "r" );
 					$counter = 0;
-					while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+					while ( ($data = fgetcsv( $handle, 1000, "," ) ) !== FALSE ) {
 					
 						// Skip the first row as is likely column names
-						if ($counter === 0) {
+						if ( $counter === 0 ) {
 							$counter++;
 							continue;
 						}
-						$file_data[] = $data[0];
 						//Insert the row into the database
-						$query = $wpdb->insert($wpdb->prefix . "aa_post_codes_uk", array(
+						$query = $wpdb->insert( $wpdb->prefix . "aa_post_codes_uk", array(
 							"email" => $data[0],
 							"postcode" => $data[1],
 							"message" => $data[2]
 						));
 					}
-					fclose($handle);
+					fclose( $handle );
 
 				    echo json_encode( $query ? 'success' : $wpdb->last_error );		
 				}
