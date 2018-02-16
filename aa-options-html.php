@@ -58,6 +58,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	</form>
 
+	<hr />
+
+	<h1>Upload</h1>
+
 	<form class="upform" enctype="multipart/form-data"> 
 		<label for="aa_file_upload">Upload CSV</label>
 		<input id="aa_file_upload" type="file" name="aa_file_upload"/>
@@ -66,4 +70,54 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<progress></progress>
 	</form>
 
+	<hr />
+
+	<h1>View Data</h1>
+	<div class="a-select-feild">
+		<label for="a-select">Choose a location</lable>						
+		<select id="a-select" class="area-select">
+			<option value="null">-- Please Select --</option>
+			<!-- Options loaded here -->
+		</select>
+	</div>	
+
+	<table class="widefat fixed data-table" cellspacing="0">
+    <thead>
+
+    <tr>
+			<th id="columnname" class="manage-column column-columnname" scope="col">Area</th>
+			<th id="columnname" class="manage-column column-columnname" scope="col">Total Post Codes</th>
+			<th id="columnname" class="manage-column column-columnname" scope="col">Email</th>
+			<th id="columnname" class="manage-column column-columnname" scope="col">CC</th>
+			<th id="columnname" class="manage-column column-columnname" scope="col" width="400px">Message</th>
+			<th id="columnname" class="manage-column column-columnname" scope="col"></th>			
+    </tr>
+
+    </thead>
+
+    <tfoot>
+
+    <tr>
+			<th class="manage-column column-columnname" scope="col">Area</th>
+			<th class="manage-column column-columnname" scope="col">Total Post Codes</th>
+			<th class="manage-column column-columnname" scope="col">Email</th>
+			<th class="manage-column column-columnname" scope="col">CC</th>
+			<th class="manage-column column-columnname" scope="col" width="400px">Message</th>
+			<th class="manage-column column-columnname" scope="col"></th>			
+    </tr>
+
+    </tfoot>
+
+    <tbody><!-- Table contents loaded here --></tbody>
+
+</table>
+
+
+
 </div> 
+
+<style>
+.a-select-feild {
+    margin-bottom: 20px;
+}
+</style>
